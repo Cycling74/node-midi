@@ -41,21 +41,37 @@ If your are force-installing from source or are running on system without availa
 * Install the libasound2-dev package.
 * Python (for node-gyp)
 
+## Installation
+
+Installation uses node-gyp and requires Python 2.7.2 or higher.
+
+From npm:
+```bash
+$ npm install Cycling74/node-midi
+```
+
 To force an install from source and skip downloading the pre-built binary from the GitHub releases:
 
 ```
 npm install Cycling74/node-midi --build-from-source
 ```
 
+
 ## Usage
+
+### MIDI Messages
+
+This library deals with MIDI messages as JS Arrays for both input and output. For example, `[144,69,127]` is MIDI message with status code 144 which means "Note on" on "Channel 1".
+
+For list of midi status codes, see http://www.midi.org/techspecs/midimessages.php
 
 ### Input
 
 ```js
-var midi = require('midi');
+const midi = require('midi');
 
 // Set up a new input.
-var input = new midi.input();
+const input = new midi.Input();
 
 // Count the available input ports.
 input.getPortCount();
@@ -64,12 +80,12 @@ input.getPortCount();
 input.getPortName(0);
 
 // Configure a callback.
-input.on('message', function(deltaTime, message) {
+input.on('message', (deltaTime, message) => {
   // The message is an array of numbers corresponding to the MIDI bytes:
   //   [status, data1, data2]
   // https://www.cs.cf.ac.uk/Dave/Multimedia/node158.html has some helpful
   // information interpreting the messages.
-  console.log('m:' + message + ' d:' + deltaTime);
+  console.log(`m: ${message} d: ${deltaTime}`);
 });
 
 // Open the first available input port.
@@ -87,16 +103,18 @@ input.ignoreTypes(false, false, false);
 // ... receive MIDI messages ...
 
 // Close the port when done.
-input.closePort();
+setTimeout(function() {
+  input.closePort();
+}, 100000);
 ```
 
 ### Output
 
 ```js
-var midi = require('midi');
+const midi = require('midi');
 
 // Set up a new output.
-var output = new midi.output();
+const output = new midi.Output();
 
 // Count the available output ports.
 output.getPortCount();
@@ -122,14 +140,14 @@ connect to. This can be done simply by calling openVirtualPort(portName) instead
 of openPort(portNumber).
 
 ```js
-var midi = require('midi');
+const midi = require('midi');
 
 // Set up a new input.
-var input = new midi.input();
+const input = new midi.Input();
 
 // Configure a callback.
-input.on('message', function(deltaTime, message) {
-    console.log('m:' + message + ' d:' + deltaTime);
+input.on('message', (deltaTime, message) => {
+    console.log(`m: ${message} d: ${deltaTime}`);
 });
 
 // Create a virtual input port.
@@ -154,13 +172,13 @@ You can also use this library with streams! Here are the interfaces
 
 ```js
 // create a readable stream
-var stream1 = midi.createReadStream();
+const stream1 = midi.createReadStream();
 
 // createReadStream also accepts an optional `input` param
-var input = new midi.input();
+const input = new midi.Input();
 input.openVirtualPort('hello world');
 
-var stream2 = midi.createReadStream(input)
+const stream2 = midi.createReadStream(input)
 
 stream2.pipe(require('fs').createWriteStream('something.bin'));
 ```
@@ -169,13 +187,13 @@ stream2.pipe(require('fs').createWriteStream('something.bin'));
 
 ```js
 // create a writable stream
-var stream1 = midi.createWriteStream();
+const stream1 = midi.createWriteStream();
 
 // createWriteStream also accepts an optional `output` param
-var output = new midi.output();
+const output = new midi.Output();
 output.openVirtualPort('hello again');
 
-var stream2 = midi.createWriteStream(output);
+const stream2 = midi.createWriteStream(output);
 
 require('fs').createReadStream('something.bin').pipe(stream2);
 ```

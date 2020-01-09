@@ -1,10 +1,10 @@
 {
   "name": "midi",
-  "version": "0.9.6",
+  "version": "1.0.0",
   "scripts": {
     "build": "dotenv sh ./scripts/build.sh",
     "install": "node-pre-gyp install --fallback-to-build",
-    "test": "sh ./scripts/test.sh"
+    "test": "mocha test/unit/*.js && node test/virtual-loopback-test-automated.js"
   },
   "main": "midi.js",
   "description": "MIDI hardware IO",
@@ -41,16 +41,18 @@
       "name": "Hugo Hromic"
     }
   ],
+  "license": "MIT",
   "engines": {
     "node": ">=0.8.0"
   },
   "dependencies": {
+    "bindings": "~1.5.0",
     "nan": "^2.3.3",
     "node-pre-gyp": "^0.12.0"
   },
   "devDependencies": {
     "dotenv-cli": "^1.4.0",
-    "mocha": ">= 2.1.0",
+    "mocha": "^6.1.4",
     "node-pre-gyp-github": "^1.4.3",
     "rimraf": "^2.6.2",
     "should": ">= 5.0.1"
